@@ -88,6 +88,20 @@ history = model1.fit(X_train, y_train,
           validation_data = (X_test, y_test),
           epochs = 20)
 
+
+# Predicción sobre el conjunto de prueba
+y_pred = model1.predict(X_test)
+
+# Convertir las predicciones de probabilidad a clases (la clase con mayor probabilidad)
+y_pred_classes = np.argmax(y_pred, axis=1)
+
+# Calcular la precisión (precision score)
+precision = precision_score(y_test, y_pred_classes, average='weighted')
+
+# Mostrar la precisión
+print(f"Precision final: {precision:.4f}")
+
+
 #Dibujar los gráficos de precisión
 plt.figure(figsize = (15, 4))
 plt.subplot(1, 2, 1)
