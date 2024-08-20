@@ -14,52 +14,85 @@ full_path = os.path.realpath(__file__)
 dir_path = os.path.dirname(full_path)
 
 
+# Cargar los conjuntos de datos de entrenamiento y prueba desde archivos CSV ubicados en el mismo directorio que el script
 trainset = pd.read_csv(f'{dir_path}/UNSW_NB15_training-set.csv')
 testset = pd.read_csv(f'{dir_path}/UNSW_NB15_testing-set.csv')
 
-
+# Obtener los tipos de datos de cada columna en el conjunto de datos de entrenamiento
 types = trainset.dtypes
 
-
+# Definir una función para aplicar One-Hot Encoding a las características categóricas del DataFrame
 def ohe_new_features(df, features_name, encoder):
+    # Transformar las características categóricas en variables binarias usando el encoder
     new_feats = encoder.transform(df[features_name])
+    
+    # Crear un nuevo DataFrame con las características transformadas
     new_cols = pd.DataFrame(new_feats, dtype=int)
+    
+    # Concatenar las nuevas características al DataFrame original
     new_df = pd.concat([df, new_cols], axis=1)
+    
+    # Eliminar las características originales categóricas del DataFrame
     new_df.drop(features_name, axis=1, inplace=True)
+    
+    # Devolver el DataFrame actualizado
     return new_df
 
+# Crear un objeto OneHotEncoder para convertir las características categóricas en binarias
 encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+
+# Especificar las características categóricas a transformar
 cat_feats = ['proto', 'service', 'state']
+
+# Ajustar el encoder a las características categóricas del conjunto de datos de entrenamiento
 encoder.fit(trainset[cat_feats])
+
+# Aplicar la transformación One-Hot Encoding al conjunto de datos de entrenamiento y de prueba
 trainset = ohe_new_features(trainset, cat_feats, encoder)
 testset = ohe_new_features(testset, cat_feats, encoder)
 
+# Convertir los DataFrames de entrenamiento y prueba a arrays de NumPy
 trainset = trainset.to_numpy()
 testset = testset.to_numpy()
-scaler =  MinMaxScaler()
+
+# Crear un objeto MinMaxScaler para escalar las características entre 0 y 1
+scaler = MinMaxScaler()
+
+# Ajustar el scaler a los datos de entrenamiento
 scaler.fit(trainset)
+
+# Escalar los datos de entrenamiento y de prueba utilizando el scaler ajustado
 trainset = scaler.transform(trainset)
 testset = scaler.transform(testset)
 
-
+# Calcular la matriz de covarianza de los datos de entrenamiento transpuestos
 cov_mat = np.cov(trainset.T)
+
+# Obtener los valores y vectores propios (autovalores y autovectores) de la matriz de covarianza
 eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+
+# Calcular la suma total de los valores propios
 tot = sum(eigen_vals)
-# var_exp ratio is fraction of eigen_val to total sum
+
+# Calcular el porcentaje de varianza explicada por cada componente principal
 var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-# calculate the cumulative sum of explained variances
+
+# Calcular la varianza explicada acumulada
 cum_var_exp = np.cumsum(var_exp)
 
-
-
+# Crear un objeto PCA para reducir la dimensionalidad a 3 componentes principales
 dim_reducer = PCA(n_components=3)
+
+# Aplicar PCA al conjunto de datos de entrenamiento para reducir su dimensionalidad
 trainset_reduced = dim_reducer.fit_transform(trainset)
-testset_reduced = dim_reducer.fit_transform(testset)
 
+# Aplicar PCA al conjunto de datos de prueba para reducir su dimensionalidad (utilizando la misma transformación)
+testset_reduced = dim_reducer.transform(testset)
 
+# Crear un objeto KMeans para realizar la agrupación en 10 clusters
 km = KMeans(n_clusters=10, init='k-means++', max_iter=300, n_init=10, random_state=42)
 
-
+# Ajustar el modelo KMeans a los datos reducidos de entrenamiento y predecir las etiquetas de los clusters
 y_km = km.fit_predict(trainset_reduced)
 
 # Calcular el Silhouette Score

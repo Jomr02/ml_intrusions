@@ -29,16 +29,19 @@ data_to_use.shape
 # Cargar datos de test
 test_data = pd.read_csv(f'{dir_path}/UNSW_NB15_testing-set.csv')
 
+# Eliminar la columna 'attack_cat' y 'label' del conjunto de datos de prueba (X_test)
 X_test = test_data.drop(axis=1, columns=['attack_cat']) 
 X_test = X_test.drop(axis=1, columns=['label'])
 
-
+# Extraer los valores de la columna 'attack_cat' y 'label' del conjunto de datos de prueba y guardarlos en y1_test
 y1_test = test_data['attack_cat'].values
 y2_test = test_data['label'].values
 
+# Eliminar la columna 'attack_cat' y 'label' del conjunto de datos que se va a utilizar (X)
 X = data_to_use.drop(axis=1, columns=['attack_cat'])
 X = X.drop(axis=1, columns=['label'])
 
+# Extraer los valores de la columna 'attack_cat' y 'label' del conjunto de datos a utilizar y guardarlos en y1
 y1 = data_to_use['attack_cat'].values
 y2 = data_to_use['label'].values
 
