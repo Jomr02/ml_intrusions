@@ -65,20 +65,7 @@ scaler.fit(trainset)
 trainset = scaler.transform(trainset)
 testset = scaler.transform(testset)
 
-# Calcular la matriz de covarianza de los datos de entrenamiento transpuestos
-cov_mat = np.cov(trainset.T)
 
-# Obtener los valores y vectores propios (autovalores y autovectores) de la matriz de covarianza
-eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
-
-# Calcular la suma total de los valores propios
-tot = sum(eigen_vals)
-
-# Calcular el porcentaje de varianza explicada por cada componente principal
-var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-
-# Calcular la varianza explicada acumulada
-cum_var_exp = np.cumsum(var_exp)
 
 # Crear un objeto PCA para reducir la dimensionalidad a 3 componentes principales
 dim_reducer = PCA(n_components=3)
