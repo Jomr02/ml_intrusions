@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
 
 
 full_path = os.path.realpath(__file__)
@@ -57,7 +58,15 @@ testset_reduced = dim_reducer.fit_transform(testset)
 
 
 km = KMeans(n_clusters=10, init='k-means++', max_iter=300, n_init=10, random_state=42)
+
+
 y_km = km.fit_predict(trainset_reduced)
+
+# Calcular el Silhouette Score
+silhouette_avg = silhouette_score(trainset_reduced, y_km)
+
+# Mostrar el Silhouette Score
+print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
 
 fig = plt.figure(figsize=(9,7))
 ax = fig.add_subplot(111, projection='3d')
@@ -80,11 +89,19 @@ ax.legend()
 plt.show()
 
 
-
-
 dbs = DBSCAN(eps=0.06, min_samples=15)
 y_dbs = dbs.fit_predict(trainset_reduced)
-print(f'Número de centroides : {len(set(dbs.labels_))}') #len(set(y_dbs))
+
+
+print(f'Número de centroides DBSCAN : {len(set(dbs.labels_))}') #len(set(y_dbs))
+
+# Calcular el Silhouette Score
+silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
+
+# Mostrar el Silhouette Score
+print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
+
+
 fig = plt.figure(figsize=(9,7))
 ax = fig.add_subplot(111, projection='3d')
 ax.scatter(trainset_reduced[:,0], trainset_reduced[:,1], trainset_reduced[:,2], c=y_dbs, cmap='Paired')
