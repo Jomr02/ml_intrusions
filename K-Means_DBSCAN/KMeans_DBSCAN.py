@@ -77,16 +77,17 @@ trainset_reduced = dim_reducer.fit_transform(trainset)
 testset_reduced = dim_reducer.transform(testset)
 
 # Crear un objeto KMeans para realizar la agrupación en 10 clusters
-km = KMeans(n_clusters=10, init='k-means++', max_iter=300, n_init=10, random_state=42)
+km = KMeans(n_clusters=9, init='k-means++', max_iter=300, n_init=10, random_state=42)
 
 # Ajustar el modelo KMeans a los datos reducidos de entrenamiento y predecir las etiquetas de los clusters
 y_km = km.fit_predict(trainset_reduced)
 
 # Calcular el Silhouette Score
-silhouette_avg = silhouette_score(trainset_reduced, y_km)
+#silhouette_avg = silhouette_score(trainset_reduced, y_km)
+
 
 # Mostrar el Silhouette Score
-print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
+#print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
 
 fig = plt.figure(figsize=(9,7))
 ax = fig.add_subplot(111, projection='3d')
@@ -99,15 +100,37 @@ ax.scatter(trainset_reduced[y_km==5, 0], trainset_reduced[y_km==5, 1], trainset_
 ax.scatter(trainset_reduced[y_km==6, 0], trainset_reduced[y_km==6, 1], trainset_reduced[y_km==6, 2],c='#8c564b', label='Cluster 7')
 ax.scatter(trainset_reduced[y_km==7, 0], trainset_reduced[y_km==7, 1], trainset_reduced[y_km==7, 2],c='#bcbd22', label='Cluster 8')
 ax.scatter(trainset_reduced[y_km==8, 0], trainset_reduced[y_km==8, 1], trainset_reduced[y_km==8, 2],c='#9467bd', label='Cluster 9')
-ax.scatter(trainset_reduced[y_km==9, 0], trainset_reduced[y_km==9, 1], trainset_reduced[y_km==9, 2],c='red', label='Cluster 10')
+#ax.scatter(trainset_reduced[y_km==9, 0], trainset_reduced[y_km==9, 1], trainset_reduced[y_km==9, 2],c='red', label='Cluster 10')
 ax.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], km.cluster_centers_[:,2], s=85, alpha=0.75, marker='o', c='black', label='Centroids')
 ax.set_title("Kmeans", fontsize='large')
 ax.set_xlabel('PC1')
 ax.set_ylabel('PC2')
 ax.set_zlabel('PC3')
 ax.legend()
-plt.show()
+#plt.show()
 
+
+# Definir rangos de búsqueda para eps y min_samples
+eps_values = np.arange(0.01, 0.2, 0.01)
+min_samples_values = range(5, 20)
+
+best_silhouette = -1
+best_params = {}
+
+for eps in eps_values:
+    for min_samples in min_samples_values:
+        dbs = DBSCAN(eps=eps, min_samples=min_samples)
+        y_dbs = dbs.fit_predict(trainset_reduced)
+        
+        # Verificar si hay más de 1 cluster
+        if len(set(y_dbs)) > 1:
+            silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
+            
+            if silhouette_avg > best_silhouette:
+                best_silhouette = silhouette_avg
+                best_params = {'eps': eps, 'min_samples': min_samples}
+
+print(f"Mejores parámetros: {best_params}, Silhouette Score: {best_silhouette}")
 
 dbs = DBSCAN(eps=0.06, min_samples=15)
 y_dbs = dbs.fit_predict(trainset_reduced)
@@ -116,10 +139,10 @@ y_dbs = dbs.fit_predict(trainset_reduced)
 print(f'Número de centroides DBSCAN : {len(set(dbs.labels_))}') #len(set(y_dbs))
 
 # Calcular el Silhouette Score
-silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
+#silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
 
 # Mostrar el Silhouette Score
-print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
+#print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
 
 
 fig = plt.figure(figsize=(9,7))

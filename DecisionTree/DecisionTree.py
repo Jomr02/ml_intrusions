@@ -14,6 +14,7 @@ from sklearn.metrics import roc_curve, auc, roc_auc_score, confusion_matrix, cla
 from sklearn import tree
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics 
+from sklearn.model_selection import GridSearchCV
 
 full_path = os.path.realpath(__file__)
 dir_path = os.path.dirname(full_path)
@@ -96,7 +97,7 @@ y2_test_transform = target_trans.transform(y2_test)
 ###DECISION TREE###
 
 # Entrenar al árbol de decisión
-DTclf = DecisionTreeClassifier(criterion="entropy", max_depth=8)
+DTclf = DecisionTreeClassifier(criterion="entropy", max_depth=10, max_features= 'log2', min_samples_leaf= 2, min_samples_split= 10)
 DTclf = DTclf.fit(X_train_transform, y2_train_transform)
 
 #Predecir usando los datos de test
@@ -113,6 +114,45 @@ DTclf_name=['Árbol de decisión','RegLog']
 print('Resultados: %s:'%DTclf_name)
 
 print(report)
+
+
+# # Definir el rango de parámetros a explorar
+# param_grid = {
+#     'criterion': ['gini', 'entropy'],
+#     'max_depth': [None, 10, 20, 30, 40, 50],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4],
+#     'max_features': [None, 'sqrt', 'log2']
+# }
+
+# # Crear el objeto GridSearchCV
+# grid_search = GridSearchCV(estimator=DecisionTreeClassifier(), 
+#                            param_grid=param_grid,
+#                            cv=StratifiedKFold(n_splits=5),
+#                            scoring='accuracy',  
+#                            verbose=1,
+#                            n_jobs=-1)
+
+# # Entrenar GridSearchCV con los datos de entrenamiento
+# grid_search.fit(X_train_transform, y2_train_transform)
+
+# # Obtener los mejores parámetros
+# best_params = grid_search.best_params_
+# print("Mejores parámetros encontrados:")
+# print(best_params)
+
+# # Entrenar el modelo con los mejores parámetros encontrados
+# best_model = grid_search.best_estimator_
+
+# # Predecir usando los datos de test
+# y_pred_best = best_model.predict(X_test_transform)
+
+# # Medir la precisión del mejor modelo
+# print("Precisión del mejor modelo:", metrics.accuracy_score(y2_test_transform, y_pred_best))
+
+# # Mostrar el reporte de clasificación
+# report_best = metrics.classification_report(y2_test_transform, y_pred_best)
+# print(report_best)
 
 
 
