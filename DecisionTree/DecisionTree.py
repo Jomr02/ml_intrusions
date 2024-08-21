@@ -15,6 +15,7 @@ from sklearn import tree
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics 
 from sklearn.model_selection import GridSearchCV
+from sklearn.tree import plot_tree
 
 full_path = os.path.realpath(__file__)
 dir_path = os.path.dirname(full_path)
@@ -57,7 +58,8 @@ categorical_cols = X_train.select_dtypes(include=['object', 'bool']).columns
 
 
 # Definir las transformaciones para las columnas
-t = [('ohe', OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1), categorical_cols),
+t = [('ohe', OrdinalEncoder(handle_unknown='use_encoded_value',
+     unknown_value=-1), categorical_cols),
     ('scale', StandardScaler(), numerical_cols)]
 
 col_trans = ColumnTransformer(transformers=t)
@@ -97,7 +99,8 @@ y2_test_transform = target_trans.transform(y2_test)
 ###DECISION TREE###
 
 # Entrenar al árbol de decisión
-DTclf = DecisionTreeClassifier(criterion="entropy", max_depth=10, max_features= 'log2', min_samples_leaf= 2, min_samples_split= 10)
+DTclf = DecisionTreeClassifier(criterion="entropy", max_depth=10, 
+            max_features= 'log2', min_samples_leaf= 2, min_samples_split= 10)
 DTclf = DTclf.fit(X_train_transform, y2_train_transform)
 
 #Predecir usando los datos de test
@@ -116,14 +119,21 @@ print('Resultados: %s:'%DTclf_name)
 print(report)
 
 
-# # Definir el rango de parámetros a explorar
-# param_grid = {
-#     'criterion': ['gini', 'entropy'],
-#     'max_depth': [None, 10, 20, 30, 40, 50],
-#     'min_samples_split': [2, 5, 10],
-#     'min_samples_leaf': [1, 2, 4],
-#     'max_features': [None, 'sqrt', 'log2']
-# }
+# Crear el gráfico del árbol de decisión
+plt.figure(figsize=(170,85))  
+plot_tree(DTclf, filled=True, feature_names=X.columns, class_names=True, rounded=True)
+plt.suptitle("Árbol de decisión", fontsize=16)
+plt.show()
+
+
+# Definir el rango de parámetros a explorar
+param_grid = {
+    'criterion': ['gini', 'entropy'],
+    'max_depth': [None, 10, 20, 30, 40, 50],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'max_features': [None, 'sqrt', 'log2']
+}
 
 # # Crear el objeto GridSearchCV
 # grid_search = GridSearchCV(estimator=DecisionTreeClassifier(), 
