@@ -83,11 +83,24 @@ km = KMeans(n_clusters=9, init='k-means++', max_iter=300, n_init=10, random_stat
 y_km = km.fit_predict(trainset_reduced)
 
 # Calcular el Silhouette Score
-#silhouette_avg = silhouette_score(trainset_reduced, y_km)
+silhouette_avg = silhouette_score(trainset_reduced, y_km)
+
+
+### MÉTODO DE OPTIMIZACIÓN DEL CODO DE KMEANS ###
+# silhouette_scores = []
+# for k in range(2, 11):
+#     km = KMeans(n_clusters=k, init='k-means++', max_iter=300, n_init=10, random_state=42)
+#     y_km = km.fit_predict(trainset_reduced)
+#     silhouette_scores.append(silhouette_score(trainset_reduced, y_km))
+
+# plt.plot(range(2, 11), silhouette_scores)
+# plt.xlabel('Number of clusters')
+# plt.ylabel('Silhouette Score')
+# plt.show()
 
 
 # Mostrar el Silhouette Score
-#print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
+print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
 
 fig = plt.figure(figsize=(9,7))
 ax = fig.add_subplot(111, projection='3d')
@@ -107,42 +120,42 @@ ax.set_xlabel('PC1')
 ax.set_ylabel('PC2')
 ax.set_zlabel('PC3')
 ax.legend()
-#plt.show()
+plt.show()
 
+### METODO OPTIMIZACIÓN DBSCAN ###
+# # Definir rangos de búsqueda para eps y min_samples
+# eps_values = np.arange(0.01, 0.2, 0.01)
+# min_samples_values = range(5, 20)
 
-# Definir rangos de búsqueda para eps y min_samples
-eps_values = np.arange(0.01, 0.2, 0.01)
-min_samples_values = range(5, 20)
+# best_silhouette = -1
+# best_params = {}
 
-best_silhouette = -1
-best_params = {}
-
-for eps in eps_values:
-    for min_samples in min_samples_values:
-        dbs = DBSCAN(eps=eps, min_samples=min_samples)
-        y_dbs = dbs.fit_predict(trainset_reduced)
+# for eps in eps_values:
+#     for min_samples in min_samples_values:
+#         dbs = DBSCAN(eps=eps, min_samples=min_samples)
+#         y_dbs = dbs.fit_predict(trainset_reduced)
         
-        # Verificar si hay más de 1 cluster
-        if len(set(y_dbs)) > 1:
-            silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
+#         # Verificar si hay más de 1 cluster
+#         if len(set(y_dbs)) > 1:
+#             silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
             
-            if silhouette_avg > best_silhouette:
-                best_silhouette = silhouette_avg
-                best_params = {'eps': eps, 'min_samples': min_samples}
+#             if silhouette_avg > best_silhouette:
+#                 best_silhouette = silhouette_avg
+#                 best_params = {'eps': eps, 'min_samples': min_samples}
 
-print(f"Mejores parámetros: {best_params}, Silhouette Score: {best_silhouette}")
+# print(f"Mejores parámetros: {best_params}, Silhouette Score: {best_silhouette}")
 
-dbs = DBSCAN(eps=0.06, min_samples=15)
+dbs = DBSCAN(eps=0.12, min_samples=13)
 y_dbs = dbs.fit_predict(trainset_reduced)
 
 
 print(f'Número de centroides DBSCAN : {len(set(dbs.labels_))}') #len(set(y_dbs))
 
 # Calcular el Silhouette Score
-#silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
+silhouette_avg = silhouette_score(trainset_reduced, y_dbs)
 
 # Mostrar el Silhouette Score
-#print(f" Puntuación Silhouette KMeans: {silhouette_avg}")
+print(f" Puntuación Silhouette DBSCAN: {silhouette_avg}")
 
 
 fig = plt.figure(figsize=(9,7))
