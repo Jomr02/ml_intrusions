@@ -37,3 +37,8 @@ To run the scripts, you need to have the following installed:
   - [scikit-learn](https://scikit-learn.org/)
   - [Matplotlib](https://matplotlib.org/)
 
+ - You can install them by executing this command:
+ ```
+ pip install -r requirements.txt
+ ```
+
