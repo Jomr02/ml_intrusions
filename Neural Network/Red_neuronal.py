@@ -29,8 +29,8 @@ y_test = pd.read_csv(f'{dir_path}/UNSW-NB15-test-set-label.csv')
 # Convertir los datos a float32
 X_train = np.asarray(X_train).astype("float32")
 y_train = np.asarray(y_train).astype("float32") 
-X_test = np.asarray(X_train).astype("float32")
-y_test = np.asarray(y_train).astype("float32") 
+X_test = np.asarray(X_test).astype("float32")
+y_test = np.asarray(y_test).astype("float32") 
     
 
 #ENTRENAMIENTO MODELO
@@ -67,17 +67,14 @@ model1.add(Dense(5, activation='softmax'))  # Para clasificación multiclase
 model1.summary()
 
 
-# Compilamos el modelo optimizer=optimizers.Adam(learning_rate=0.001
-model1.compile(optimizer= optimizers.SGD(learning_rate=0.1),
-              loss='categorical_crossentropy',  # Para multiclase
-              metrics=['accuracy'])
-
-
-#Tres parámetros para poder compilar el modelo: 
+# Compilamos el modelo 
 #Loss - La función de pérdida (loss function).
 #Optimizazor- Para minimizar la función de pérdida.
 #Metricas - Como se evaluan los resultados del entrenamiento (precisión por ejemplo).
-model1.compile(loss = losses.sparse_categorical_crossentropy, metrics = ['accuracy'])
+model1.compile(optimizer= optimizers.SGD(learning_rate=0.1),
+              loss='sparse_categorical_crossentropy',  # Para multiclase
+              metrics=['accuracy'])
+
 
 #Encajar el modelo en los datos.
 #X_train - Las columnas de características de los datos de entrenamiento
@@ -121,3 +118,22 @@ plt.ylabel("Precisión de entrenamiento vs Precisión de validación")
 plt.legend(loc = "best")
 
 plt.show()
+
+
+###Mostrar informe de métricas###
+
+# Predicción sobre el conjunto de prueba
+y_pred = model1.predict(X_test)
+
+# Convertir las predicciones de probabilidad a clases
+y_pred_classes = np.argmax(y_pred, axis=1)
+
+# Convertir y_test a entero si es necesario
+y_test_classes = y_test.astype(int)
+
+# Mostrar el reporte de clasificación
+DTclf_name=['Resultados Red Neuronal:','RegLog']
+
+print('Resultados: %s:'%DTclf_name)
+print(classification_report(y_test_classes, y_pred_classes))
+
