@@ -62,7 +62,7 @@ model1.add(BatchNormalization())
 model1.add(Dropout(0.0001))
 
 # Capa de salida (Output Layer)
-model1.add(Dense(5, activation='softmax'))  # Para clasificación multiclase
+model1.add(Dense(2, activation='softmax'))  
 
 model1.summary()
 
@@ -72,7 +72,7 @@ model1.summary()
 #Optimizazor- Para minimizar la función de pérdida.
 #Metricas - Como se evaluan los resultados del entrenamiento (precisión por ejemplo).
 model1.compile(optimizer= optimizers.SGD(learning_rate=0.1),
-              loss='sparse_categorical_crossentropy',  # Para multiclase
+              loss='sparse_categorical_crossentropy',  
               metrics=['accuracy'])
 
 
