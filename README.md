@@ -37,8 +37,16 @@ To run the scripts, you need to have the following installed:
   - [scikit-learn](https://scikit-learn.org/)
   - [Matplotlib](https://matplotlib.org/)
 
- - You can install them by executing this command:
+ - You can install them executing the following command:
  ```
  pip install -r requirements.txt
  ```
+
+ - You can run the program with the following command:
+ ```
+ python3 main.py
+ ```
+ - Then, just select the desired algorithm by writing the algorithm's number and pressing enter:
+
+![Main Menu](Images/Main_Menu.PNG)
 
